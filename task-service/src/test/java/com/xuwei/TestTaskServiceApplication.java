@@ -10,14 +10,9 @@ import org.testcontainers.utility.DockerImageName;
 
 @TestConfiguration(proxyBeanMethods = false)
 public class TestTaskServiceApplication {
-    @Bean
-    @ServiceConnection
-    PostgreSQLContainer<?> postgreSQLContainer() {
-        return new PostgreSQLContainer<>(DockerImageName.parse(
-                "postgres:16-alpine"));
-    }
+
 
     public static void main(String[] args) {
-        SpringApplication.from(TaskServiceApplication::main).with(TestTaskServiceApplication.class).run(args);
+        SpringApplication.from(TaskServiceApplication::main).with(ContainersConfig.class).run(args);
     }
 }
