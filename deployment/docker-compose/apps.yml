@@ -1,0 +1,22 @@
+name: 'quickrun-demo'
+
+services:
+  task-service:
+    image: qinxuwei/quickrun-demo-task-service:latest
+    container_name: task-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DB_URL=jdbc:postgresql://task-db:5432/postgres
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+
+    restart: unless-stopped
+    depends_on:
+      task-db:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 700m
