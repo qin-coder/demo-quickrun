@@ -1,0 +1,25 @@
+
+CREATE TABLE IF NOT EXISTS tasks (
+
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    description TEXT,
+    base_fee NUMERIC(10, 2) NOT NULL DEFAULT 0.00,
+    per_km_rate NUMERIC(10, 2) NOT NULL DEFAULT 0.00,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
+CREATE OR REPLACE FUNCTION update_task_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_update_task_updated_at
+    BEFORE UPDATE ON tasks
+    FOR EACH ROW
+    EXECUTE FUNCTION update_task_updated_at();
