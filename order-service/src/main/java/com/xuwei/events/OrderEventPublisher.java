@@ -1,10 +1,12 @@
 package com.xuwei.events;
 
 import com.xuwei.config.ApplicationProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class OrderEventPublisher {
 
     private final RabbitTemplate rabbitTemplate;
@@ -16,6 +18,18 @@ public class OrderEventPublisher {
     }
 
     public void publishOrderCreated(OrderCreatedEvent ev) {
-        rabbitTemplate.convertAndSend(props.getOrderEventsExchange(), props.getNewOrdersQueue(), ev);
+        try {
+            log.info(" Attempting to publish OrderCreatedEvent:");
+            log.info(" Exchange: {}", props.getOrderEventsExchange());
+            log.info(" Routing Key: {}", props.getNewOrdersQueue());
+            log.info(" Order Number: {}", ev.getOrderNumber());
+
+            rabbitTemplate.convertAndSend(props.getOrderEventsExchange(), props.getNewOrdersQueue(), ev);
+
+            log.info("OrderCreatedEvent published successfully");
+        } catch (Exception e) {
+            log.error("Failed to publish OrderCreatedEvent", e);
+        }
     }
+
 }

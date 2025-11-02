@@ -1,8 +1,18 @@
 package com.xuwei.service;
 
-import com.xuwei.dto.CreateOrderRequest;
-import com.xuwei.dto.CreateOrderResponse;
+import com.xuwei.dto.*;
+import org.springframework.data.domain.Pageable;
+import java.util.Optional;
 
 public interface OrderService {
+
     CreateOrderResponse createOrder(CreateOrderRequest req);
+
+    PagedResult<OrderResponse> getAllOrders(Pageable pageable);
+
+    Optional<OrderResponse> getOrderById(Long id);
+
+    Optional<OrderResponse> updateOrderStatus(Long id, UpdateOrderStatusRequest req);
+
+    void deleteOrder(Long id);
 }
