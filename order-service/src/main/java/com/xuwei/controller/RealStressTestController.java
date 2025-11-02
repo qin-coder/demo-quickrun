@@ -92,7 +92,7 @@ public class RealStressTestController {
         return ResponseEntity.ok("Continuous real order creation started");
     }
 
-    @GetMapping("/real-stats")
+    @GetMapping("/real-status")
     public ResponseEntity<String> getRealStats() {
         return ResponseEntity.ok("Total real orders created: " + orderCounter.get());
     }

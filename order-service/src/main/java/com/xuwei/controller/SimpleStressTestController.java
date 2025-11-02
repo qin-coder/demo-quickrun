@@ -89,7 +89,7 @@ public class SimpleStressTestController {
         return ResponseEntity.ok("Continuous load test started");
     }
 
-    @GetMapping("/stats")
+    @GetMapping("/status")
     public ResponseEntity<String> getStats() {
         return ResponseEntity.ok("Total messages sent: " + messageCounter.get());
     }
