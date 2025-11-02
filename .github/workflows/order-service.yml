@@ -15,11 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       working-directory: ./order-service
-
     defaults:
       run:
         working-directory: ${{ env.working-directory }}
-
     steps:
       - uses: actions/checkout@v5
 
@@ -30,7 +28,7 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Grant execute permission to mvnw
+      - name: Make Maven wrapper executable
         run: chmod +x mvnw
 
       - name: Build with Maven
@@ -41,4 +39,3 @@ jobs:
         with:
           username: ${{ secrets.QUICKRUN_USERNAME }}
           password: ${{ secrets.QUICKRUN_TOKEN }}
-
