@@ -12,7 +12,7 @@
     <artifactId>task-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>task-service</name>
-    <description>quickrun-demo</description>
+    <description>task-service for QuickRun Demo</description>
 
     <properties>
         <java.version>21</java.version>
