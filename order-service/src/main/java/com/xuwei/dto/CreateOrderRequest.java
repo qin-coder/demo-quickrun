@@ -22,7 +22,6 @@ public class CreateOrderRequest {
     @NotBlank private String deliveryAddressState;
     @NotBlank private String deliveryAddressZipCode;
     @NotBlank private String deliveryAddressCountry;
-
     @NotNull private Long taskId;
     @NotNull @DecimalMin("0.0") private BigDecimal distanceKm;
 
