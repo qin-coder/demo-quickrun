@@ -6,11 +6,13 @@ vars:
   DC_DIR: "deployment/docker-compose"
   INFRA_DC_FILE: "{{.DC_DIR}}/infra.yml"
   APPS_DC_FILE: "{{.DC_DIR}}/apps.yml"
+  SLEEP_CMD: '{{if eq .GOOS "windows"}}timeout{{else}}sleep{{end}}'
 
 tasks:
   default:
     cmds:
       - task: test
+
   test:
     deps: [format]
     cmds:
@@ -20,9 +22,20 @@ tasks:
     cmds:
       - "{{.MVNW}} clean"
 
+
   build:
     cmds:
       - "{{.MVNW}} -pl task-service spring-boot:build-image -DskipTests"
+      - "{{.MVNW}} -pl order-service spring-boot:build-image -DskipTests"
+
+
+  build_task:
+    cmds:
+      - "{{.MVNW}} -pl task-service spring-boot:build-image -DskipTests"
+
+  build_order:
+    cmds:
+      - "{{.MVNW}} -pl order-service spring-boot:build-image -DskipTests"
 
 
   start_infra:
@@ -40,14 +53,38 @@ tasks:
       - task: sleep
       - task: start_infra
 
+
   start:
-    deps: [ build ]
+    deps: [build]
     cmds:
       - "docker compose -f {{.INFRA_DC_FILE}} -f {{.APPS_DC_FILE}} up -d"
+
+
+  start_task:
+    deps: [build_task]
+    cmds:
+      - "docker compose -f {{.INFRA_DC_FILE}} -f {{.APPS_DC_FILE}} up -d task-service"
+
+  start_order:
+    deps: [build_order]
+    cmds:
+      - "docker compose -f {{.INFRA_DC_FILE}} -f {{.APPS_DC_FILE}} up -d order-service"
+
   stop:
     cmds:
       - "docker compose -f {{.INFRA_DC_FILE}} -f {{.APPS_DC_FILE}} stop"
       - "docker compose -f {{.INFRA_DC_FILE}} -f {{.APPS_DC_FILE}} rm -f"
+
+
+  stop_task:
+    cmds:
+      - "docker compose -f {{.APPS_DC_FILE}} stop task-service"
+      - "docker compose -f {{.APPS_DC_FILE}} rm -f task-service"
+
+  stop_order:
+    cmds:
+      - "docker compose -f {{.APPS_DC_FILE}} stop order-service"
+      - "docker compose -f {{.APPS_DC_FILE}} rm -f order-service"
 
   restart:
     cmds:
@@ -55,8 +92,96 @@ tasks:
       - task: sleep
       - task: start
 
+
+  restart_task:
+    cmds:
+      - task: stop_task
+      - task: sleep
+      - task: start_task
+
+  restart_order:
+    cmds:
+      - task: stop_order
+      - task: sleep
+      - task: start_order
+
+
+  status:
+    cmds:
+      - "docker compose -f {{.INFRA_DC_FILE}} -f {{.APPS_DC_FILE}} ps"
+
+  logs_task:
+    cmds:
+      - "docker compose -f {{.APPS_DC_FILE}} logs task-service"
+
+  logs_order:
+    cmds:
+      - "docker compose -f {{.APPS_DC_FILE}} logs order-service"
+
+  logs_task_follow:
+    cmds:
+      - "docker compose -f {{.APPS_DC_FILE}} logs -f task-service"
+
+  logs_order_follow:
+    cmds:
+      - "docker compose -f {{.APPS_DC_FILE}} logs -f order-service"
+
+
+  health:
+    cmds:
+      - "echo '=== Task Service ==='"
+      - "curl -s http://localhost:8081/actuator/health | jq .status || echo 'Not available'"
+      - "echo '=== Order Service ==='"
+      - "curl -s http://localhost:8082/actuator/health | jq .status || echo 'Not available'"
+      - "echo '=== RabbitMQ ==='"
+      - "curl -s -u guest:guest http://localhost:15672/api/overview | jq .listeners[0] || echo 'Not available'"
+
+
+  health_task:
+    cmds:
+      - "curl -s http://localhost:8081/actuator/health | jq ."
+
+  health_order:
+    cmds:
+      - "curl -s http://localhost:8082/actuator/health | jq ."
+
   sleep:
     vars:
       DURATION: "{{default 5 .DURATION}}"
     cmds:
-      - "sleep {{.DURATION}}"
+      - "{{.SLEEP_CMD}} {{.DURATION}}"
+
+
+  clean_all:
+    cmds:
+      - "docker compose -f {{.INFRA_DC_FILE}} -f {{.APPS_DC_FILE}} down -v"
+      - "docker system prune -f"
+
+
+  redeploy_task:
+    cmds:
+      - task: stop_task
+      - task: build_task
+      - task: start_task
+      - task: health_task
+
+  redeploy_order:
+    cmds:
+      - task: stop_order
+      - task: build_order
+      - task: start_order
+      - task: health_order
+
+
+  stress_test_order:
+    cmds:
+      - "echo 'Running stress test on Order Service...'"
+      - "curl -X POST 'http://localhost:8082/api/stress-test/create-real-orders?count=100'"
+      - "{{.SLEEP_CMD}} 5"
+      - "curl -X POST 'http://localhost:8082/api/stress-test/continuous-real-orders?ordersPerSecond=20&durationSeconds=30'"
+
+  monitor_rabbitmq:
+    cmds:
+      - "echo 'RabbitMQ Monitoring - Open http://localhost:15672 (guest/guest)'"
+      - "curl -s -u guest:guest http://localhost:15672/api/queues/%2F/new-orders | jq '{name: .name, messages_ready: .messages_ready, messages_unacknowledged: .messages_unacknowledged}'"
+
