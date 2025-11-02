@@ -1,9 +1,9 @@
-name: task Service
+name: Order Service
 
 on:
   push:
     paths:
-      - task-service/**
+      - order-service/**
     branches:
       - 'master'
   pull_request:
@@ -14,11 +14,12 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     env:
-      working-directory: ./task-service
+      working-directory: ./order-service
 
     defaults:
       run:
         working-directory: ${{ env.working-directory }}
+
     steps:
       - uses: actions/checkout@v5
 
@@ -40,3 +41,4 @@ jobs:
         with:
           username: ${{ secrets.QUICKRUN_USERNAME }}
           password: ${{ secrets.QUICKRUN_TOKEN }}
+
