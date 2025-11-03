@@ -27,6 +27,7 @@ tasks:
     cmds:
       - "{{.MVNW}} -pl task-service spring-boot:build-image -DskipTests"
       - "{{.MVNW}} -pl order-service spring-boot:build-image -DskipTests"
+      - "{{.MVNW}} -pl api-gateway spring-boot:build-image -DskipTests"
 
 
   build_task:
@@ -36,6 +37,10 @@ tasks:
   build_order:
     cmds:
       - "{{.MVNW}} -pl order-service spring-boot:build-image -DskipTests"
+
+  build_api:
+    cmds:
+      - "{{.MVNW}} -pl api-gateway spring-boot:build-image -DskipTests"
 
 
   start_infra:
@@ -70,6 +75,11 @@ tasks:
     cmds:
       - "docker compose -f {{.INFRA_DC_FILE}} -f {{.APPS_DC_FILE}} up -d order-service"
 
+  start_api:
+    deps: [ build_api ]
+    cmds:
+      - "docker compose -f {{.INFRA_DC_FILE}} -f {{.APPS_DC_FILE}} up -d api-gateway"
+
   stop:
     cmds:
       - "docker compose -f {{.INFRA_DC_FILE}} -f {{.APPS_DC_FILE}} stop"
@@ -85,6 +95,11 @@ tasks:
     cmds:
       - "docker compose -f {{.APPS_DC_FILE}} stop order-service"
       - "docker compose -f {{.APPS_DC_FILE}} rm -f order-service"
+
+  stop_api:
+    cmds:
+      - "docker compose -f {{.APPS_DC_FILE}} stop api-gateway"
+      - "docker compose -f {{.APPS_DC_FILE}} rm -f api-gateway"
 
   restart:
     cmds:
@@ -105,6 +120,12 @@ tasks:
       - task: sleep
       - task: start_order
 
+  restart_api:
+    cmds:
+      - task: stop_api
+      - task: sleep
+      - task: start_api
+
 
   status:
     cmds:
@@ -118,6 +139,10 @@ tasks:
     cmds:
       - "docker compose -f {{.APPS_DC_FILE}} logs order-service"
 
+  logs_api:
+    cmds:
+      - "docker compose -f {{.APPS_DC_FILE}} logs api-gateway"
+
   logs_task_follow:
     cmds:
       - "docker compose -f {{.APPS_DC_FILE}} logs -f task-service"
@@ -125,6 +150,10 @@ tasks:
   logs_order_follow:
     cmds:
       - "docker compose -f {{.APPS_DC_FILE}} logs -f order-service"
+
+  logs_api_follow:
+    cmds:
+      - "docker compose -f {{.APPS_DC_FILE}} logs -f api-gateway"
 
 
   health:
@@ -135,6 +164,7 @@ tasks:
       - "curl -s http://localhost:8082/actuator/health | jq .status || echo 'Not available'"
       - "echo '=== RabbitMQ ==='"
       - "curl -s -u guest:guest http://localhost:15672/api/overview | jq .listeners[0] || echo 'Not available'"
+      - "curl -s http://localhost:8989/actuator/health | jq . || echo 'API Gateway not available'"
 
 
   health_task:

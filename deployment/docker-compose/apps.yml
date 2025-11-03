@@ -34,7 +34,7 @@ services:
       - RABBITMQ_PORT=5672
       - RABBITMQ_USERNAME=guest
       - RABBITMQ_PASSWORD=guest
-      - TASK_SERVICE_URL=http://task-service:8081
+      - TASK_SERVICE_URL=http://api-gateway:8989/task
     restart: unless-stopped
     depends_on:
       orders-db:
@@ -43,6 +43,21 @@ services:
         condition: service_healthy
       task-service:
         condition: service_started
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+
+  api-gateway:
+    image: qinxuwei/quickrun-demo-api-gateway:latest
+    container_name: api-gateway
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - TASK_SERVICE_URL=http://task-service:8081
+      - ORDER_SERVICE_URL=http://order-service:8082
+    ports:
+      - "8989:8989"
+    restart: unless-stopped
     deploy:
       resources:
         limits:

@@ -15,4 +15,11 @@ public interface OrderService {
     Optional<OrderResponse> updateOrderStatus(Long id, UpdateOrderStatusRequest req);
 
     void deleteOrder(Long id);
+
+    String createOrderOptimized(CreateOrderRequest req);
+
+
+    int createOrdersInBatch(int batchSize);
+
+    CreateOrderRequest generateRandomOrderRequest();
 }

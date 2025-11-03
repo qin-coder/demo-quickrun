@@ -21,6 +21,7 @@
     <modules>
         <module>task-service</module>
         <module>order-service</module>
+        <module>api-gateway</module>
     </modules>
 
 
