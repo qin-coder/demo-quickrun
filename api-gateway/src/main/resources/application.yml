@@ -1,0 +1,58 @@
+server:
+  port: 8989
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  tracing:
+    enabled: false
+    sampling:
+      probability: 1.0
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: task-service
+              uri: ${TASK_SERVICE_URL:http://localhost:8081}
+              predicates:
+                - Path=/task/**
+              filters:
+                - RewritePath=/task/?(?<segment>.*), /${segment}
+            - id: order-service
+              uri: ${ORDER_SERVICE_URL:http://localhost:8082}
+              predicates:
+                - Path=/order/**
+              filters:
+                - RewritePath=/order/?(?<segment>.*), /${segment}
+
+          discovery:
+            locator:
+              enabled: true
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowed-origins: "*"
+                allowed-methods: "*"
+                allowed-headers: "*"
+                allow-credentials: false
+          default-filters:
+            - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Methods Access-Control-Allow-Headers RETAIN_FIRST
+
+  mvc:
+    problemdetails:
+      enabled: true
+
+springdoc:
+  swagger-ui:
+    use-root-path: true
