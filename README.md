@@ -72,7 +72,7 @@ This demo serves as technical proof of my contributions to the original QuickRun
 ## 🐇 RabbitMQ Event-Driven Microservices
 
 ### Core Message Queues
-I designed and implemented a robust event-driven system using RabbitMQ to handle the high-throughput requirements of 100,000+ daily active users:
+I designed and implemented a robust event-driven system using RabbitMQ to handle the throughput requirements of 100,000+ daily active users:
 
 ```
 // Event Types for Different Business Scenarios
