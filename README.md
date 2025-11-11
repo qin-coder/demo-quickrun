@@ -38,11 +38,12 @@ This demo serves as technical proof of my contributions to the original QuickRun
                       │   (PostgreSQL)  │    │   (PostgreSQL)  │
                       └─────────────────┘    └─────────────────┘
 ```
+---
 ### Service Responsibilities
 
-| Service             | Port                                                                 | Technology | My Responsibility |
-|-------------------|-----------------------------------------------------------------------------|
-|  **API Gateway**      |8989 | Spring Cloud Gateway | Routing & Load Balancing |
+| Service             | Port  | Technology | My Responsibility |
+|-------------------|-------|-------------------------|---------------------|                                                        
+|  **API Gateway**  |8989 | Spring Cloud Gateway | Routing & Load Balancing |
 |  **Task Service** |8081 |Spring Boot + JPA	✅ | Primary Developer |
 |  **Order Service** |8082 |Spring Boot + JPA	✅ | Primary Developer |
 |  **Task Database**  | 15432 |PostgreSQL | Database Design |
