@@ -14,7 +14,7 @@ This demo serves as technical proof of my contributions to the original QuickRun
 
 - **Backend**: Java 21, SpringBoot 3.5.7 , Spring Data JPA
 - **Message Broker**: RabbitMQ with JSON serialization  
-- **Database**: PostgreSQL with connection pooling  
+- **Database**: PostgreSQL
 - **API**: RESTful APIs
 - **Testing**: JMeter for load testing, JUnit for unit tests
 - **Deployment**: Docker containerization
