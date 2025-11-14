@@ -3,10 +3,11 @@ A reproduction of the real-world **microservices-based** delivery platform I dev
 This demo showcases a complete microservices architecture that served 400,000+ users with 100,000+ daily active users before the company ceased operations.
 
 ## 🏢 Project Background
--**Original Company**: Shenyang LEDAO Network Technology Co., Ltd.
--**My Role**: Backend Developer (Remote from Germany during Master's studies)
--**Project Period**: October 2020 - March 2022
--**Platform Scale**: 400,000 registered users, ~100,000 DAU
+
+- **Original Company**: Shenyang LEDAO Network Technology Co., Ltd.
+- **My Role**: Backend Developer (Remote from Germany during Master's studies)
+- **Project Period**: October 2020 - March 2022
+- **Platform Scale**: 400,000 registered users, ~100,000 DAU
 
 This demo serves as technical proof of my contributions to the original QuickRun platform - a same-city delivery service similar to Uber Eats or DoorDash, where I was primarily responsible for the **Task Service** and **Order Service** development.
 
